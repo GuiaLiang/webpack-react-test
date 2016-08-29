@@ -6,12 +6,21 @@ import {Provider} from 'react-redux'
 
 import {fromJS, Map} from 'immutable'
 
-import {createStore, applyMiddleware} from 'redux'
+import {createStore, applyMiddleware, compose} from 'redux'
 import {logger} from './middleware'
 import rootReducer from './reducers/rootReducer'
 
-const createStoreWithMiddleware = applyMiddleware(
-	logger
+import DevTools from './DevTools'
+
+// const createStoreWithMiddleware = applyMiddleware(
+// 	logger
+// )(createStore);
+
+const createStoreWithMiddleware = compose(
+	applyMiddleware(
+		logger
+	),
+	DevTools.instrument()
 )(createStore);
 
 var defaultData = fromJS({
@@ -26,7 +35,10 @@ var $app = document.getElementById('app');
 function render() {
 	ReactDOM.render(
 		<Provider store={store}>
-			<ConnectedApp />
+			<div>
+				<ConnectedApp />
+				<DevTools />
+			</div>		
 		</Provider>,
 		$app
 	);
